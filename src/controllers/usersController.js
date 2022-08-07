@@ -28,3 +28,24 @@ export async function getUser(req, res) {
       }
   
   }
+
+
+export async function getRanking(req, res) {
+    try{
+      const {rows:ranking} = await connection.query(
+   `SELECT users.id, users.name,
+    COUNT(urls.id) AS "linksCount",
+    COALESCE(SUM(urls."visitCount"), 0) AS "visitCount"
+    FROM users
+    LEFT JOIN urls
+    ON users.id = urls."userId"
+    GROUP BY urls."userId", users.id 
+    ORDER BY "visitCount" DESC
+    LIMIT 10`)
+      res.status(200).send(ranking);
+      }catch(error){
+        console.log(error)
+        res.sendStatus(400)
+      }
+  
+}
