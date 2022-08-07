@@ -1,5 +1,4 @@
 import connection from '../database.js';
-import  jwt  from 'jsonwebtoken';
 import { nanoid } from 'nanoid'
 
 export async function postUrl(req, res) {
@@ -39,9 +38,10 @@ export async function getUrlById(req, res) {
     try{
       const {rows:url} = await connection.query('SELECT * FROM urls WHERE "shortUrl"=$1',[shortUrl])
       if(!url.length) return res.sendStatus(404)
-       await connection.query('UPDATE urls SET accesses = accesses + 1 WHERE "shortUrl"=$1',[shortUrl])
+       await connection.query('UPDATE urls SET "visitCount" = "visitCount" + 1 WHERE "shortUrl"=$1',[shortUrl])
       res.redirect(url[0].url)
     }catch(error){
+      console.log(error)
         res.sendStatus(400)
       }
   
@@ -66,3 +66,4 @@ export async function deleteUrl(req, res) {
     }
 
 }
+
