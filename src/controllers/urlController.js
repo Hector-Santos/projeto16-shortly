@@ -34,3 +34,17 @@ export async function getUrlById(req, res) {
       }
   
   }
+
+  export async function openUrl(req, res) {
+    const shortUrl = req.params.shortUrl
+    try{
+      const {rows:url} = await connection.query('SELECT * FROM urls WHERE "shortUrl"=$1',[shortUrl])
+      if(!url.length) return res.sendStatus(404)
+       await connection.query('UPDATE urls SET accesses = accesses + 1 WHERE "shortUrl"=$1',[shortUrl])
+      res.redirect(url[0].url)
+    }catch(error){
+        console.log(error)
+        res.sendStatus(400)
+      }
+  
+  }
